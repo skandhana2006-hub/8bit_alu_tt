@@ -1,36 +1,36 @@
 module tt_um_8bit_alu (
-    input  [7:0] ui_in,
-    input  [7:0] uio_in,
-    output [7:0] uo_out,
-    input  ena,
-    input  clk,
-    input  rst_n
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       ena,
+    input  wire       clk,
+    input  wire       rst_n
 );
 
-wire [7:0] A;
-wire [7:0] B;
-reg  [7:0] result;
+wire [3:0] A;
+wire [3:0] B;
+wire [1:0] sel;
 
-assign A = ui_in;
-assign B = uio_in;
+assign A   = ui_in[3:0];
+assign B   = ui_in[7:4];
+assign sel = uio_in[1:0];
+
+reg [7:0] result;
 
 always @(*) begin
-    case (A[2:0])
-
-        3'b000: result = A + B;
-        3'b001: result = A - B;
-        3'b010: result = A & B;
-        3'b011: result = A | B;
-        3'b100: result = A ^ B;
-        3'b101: result = ~A;
-        3'b110: result = A << 1;
-        3'b111: result = A >> 1;
-
-        default: result = 8'b0;
-
+    case(sel)
+        2'b00: result = A + B;
+        2'b01: result = A - B;
+        2'b10: result = A & B;
+        2'b11: result = A | B;
     endcase
 end
 
 assign uo_out = result;
+
+assign uio_out = 8'b00000000;
+assign uio_oe  = 8'b00000000;
 
 endmodule
